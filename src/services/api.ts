@@ -1,0 +1,13 @@
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: 'http://localhost:3000/api/v1',
+  timeout: 10_000,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// Auth interceptor placeholder — will inject Bearer token in Phase 3
+apiClient.interceptors.request.use((config) => config);
+
+export const simulateDelay = (ms = 400): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
