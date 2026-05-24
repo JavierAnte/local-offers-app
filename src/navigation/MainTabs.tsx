@@ -13,30 +13,37 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 function CenterTabButton({ onPress, children }: BottomTabBarButtonProps) {
   return (
-    <TouchableOpacity onPress={onPress ?? undefined} style={styles.centerButton} activeOpacity={0.85}>
-      <View style={styles.centerButtonInner}>{children}</View>
+    <TouchableOpacity onPress={onPress ?? undefined} style={styles.centerButton} activeOpacity={0.82}>
+      <View style={styles.centerButtonRing}>
+        <View style={styles.centerButtonInner}>{children}</View>
+      </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   centerButton: {
-    top: -20,
+    top: -22,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  centerButtonRing: {
+    borderRadius: 34,
+    padding: 3,
+    backgroundColor: colors.white,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    elevation: 10,
+  },
   centerButtonInner: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
   },
 });
 
@@ -71,7 +78,7 @@ export default function MainTabs() {
         component={CreateOfferScreen}
         options={{
           tabBarLabel: 'Publicar',
-          tabBarIcon: () => <Ionicons name="add" size={28} color={colors.white} />,
+          tabBarIcon: () => <Ionicons name="add" size={32} color={colors.white} />,
           tabBarButton: (props) => <CenterTabButton {...props} />,
         }}
       />

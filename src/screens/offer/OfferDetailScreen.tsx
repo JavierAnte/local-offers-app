@@ -60,19 +60,19 @@ export default function OfferDetailScreen() {
         )}
 
         <View className="p-4">
-          <Text className="text-2xl font-bold text-text mb-1">{offer.title}</Text>
-          <Text className="text-base text-muted mb-3">{offer.businessName}</Text>
+          <Text className="text-sm font-medium text-muted mb-1">{offer.businessName}</Text>
+          <Text className="text-2xl font-bold text-text mb-2">{offer.headline}</Text>
 
-          <PriceDisplay
-            currentPrice={offer.currentPrice}
-            previousPrice={offer.previousPrice}
-            size="lg"
-          />
+          <PriceDisplay pricing={offer.pricing} size="lg" />
 
-          <View className="flex-row items-center gap-4 mt-3 mb-6">
+          {offer.description ? (
+            <Text className="text-sm text-muted mt-3 leading-5">{offer.description}</Text>
+          ) : null}
+
+          <View className="flex-row items-center gap-4 mt-4 mb-6">
             <View className="flex-row items-center gap-1">
               <Ionicons name="location-outline" size={14} color={colors.textMuted} />
-              <Text className="text-sm text-muted">{formatDistance(offer.distance)}</Text>
+              <Text className="text-sm text-muted">{formatDistance(offer.distanceMeters)}</Text>
             </View>
             {expiry && (
               <View className="flex-row items-center gap-1">
@@ -91,7 +91,7 @@ export default function OfferDetailScreen() {
             >
               <Ionicons name="checkmark-circle" size={20} color={colors.success} />
               <Text className="font-semibold text-success">
-                Validar ({offer.validations})
+                Validar ({offer.confirmationsCount})
               </Text>
             </TouchableOpacity>
 
@@ -102,7 +102,7 @@ export default function OfferDetailScreen() {
             >
               <Ionicons name="close-circle" size={20} color={colors.danger} />
               <Text className="font-semibold text-danger">
-                Invalidar ({offer.invalidations})
+                Invalidar ({offer.invalidationsCount})
               </Text>
             </TouchableOpacity>
           </View>

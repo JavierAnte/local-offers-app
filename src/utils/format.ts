@@ -1,5 +1,5 @@
-export function formatPrice(amount: number, currency = '€'): string {
-  return `${amount.toFixed(2).replace('.', ',')} ${currency}`;
+export function formatPrice(amount: number): string {
+  return `$ ${amount.toLocaleString('es-AR')}`;
 }
 
 export function formatDistance(metres: number): string {
