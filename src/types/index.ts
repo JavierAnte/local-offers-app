@@ -19,7 +19,9 @@ export interface User {
 export interface Offer {
   id: string;
   title: string;
+  description?: string;
   businessName: string;
+  isVerifiedBusiness?: boolean;
   currentPrice: number;
   previousPrice: number | null;
   imageUrl: string | null;

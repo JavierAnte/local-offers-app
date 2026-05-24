@@ -2,6 +2,7 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FeedStack from './FeedStack';
 import CreateOfferScreen from '../screens/create-offer/CreateOfferScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
@@ -40,6 +41,8 @@ const styles = StyleSheet.create({
 });
 
 export default function MainTabs() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -48,8 +51,8 @@ export default function MainTabs() {
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
           borderTopColor: colors.border,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom,
+          paddingBottom: 8 + insets.bottom,
         },
       }}
     >
@@ -67,7 +70,7 @@ export default function MainTabs() {
         name="CreateOffer"
         component={CreateOfferScreen}
         options={{
-          tabBarLabel: '',
+          tabBarLabel: 'Publicar',
           tabBarIcon: () => <Ionicons name="add" size={28} color={colors.white} />,
           tabBarButton: (props) => <CenterTabButton {...props} />,
         }}
