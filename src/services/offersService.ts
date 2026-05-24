@@ -1,4 +1,4 @@
-import type { Offer, PaginatedResponse, Category, VoteType } from '../types';
+import type { Offer, PaginatedResponse, Category, VoteType, Pricing } from '../types';
 import { MOCK_OFFERS } from '../constants/mockData';
 import { simulateDelay } from './api';
 
@@ -9,11 +9,10 @@ export interface GetOffersParams {
 }
 
 export interface CreateOfferPayload {
-  title: string;
+  headline: string;
   businessName: string;
-  currentPrice: number;
-  previousPrice?: number;
   category: Category;
+  pricing?: Pricing;
   expiresAt?: string;
   imageUri?: string;
 }
@@ -46,17 +45,16 @@ export async function createOffer(payload: CreateOfferPayload): Promise<Offer> {
   await simulateDelay(800);
   const newOffer: Offer = {
     id: `o${Date.now()}`,
-    title: payload.title,
+    headline: payload.headline,
     businessName: payload.businessName,
-    currentPrice: payload.currentPrice,
-    previousPrice: payload.previousPrice ?? null,
-    imageUrl: payload.imageUri ?? null,
     category: payload.category,
+    pricing: payload.pricing,
+    imageUrl: payload.imageUri ?? null,
     expiresAt: payload.expiresAt ?? null,
-    distance: 100,
+    distanceMeters: 100,
     createdAt: new Date().toISOString(),
-    validations: 0,
-    invalidations: 0,
+    confirmationsCount: 0,
+    invalidationsCount: 0,
     commentsCount: 0,
     postedBy: { id: 'me', name: 'Tú', avatarUrl: null, reputationScore: 0, badgesCount: 0 },
   };

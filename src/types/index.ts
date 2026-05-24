@@ -8,6 +8,16 @@ export type Category =
   | 'home'
   | 'other';
 
+export type PricingType = 'price' | 'percentage' | 'bundle' | 'text';
+
+export interface Pricing {
+  type: PricingType;
+  currentPrice?: number;
+  previousPrice?: number;
+  percentage?: number;
+  label?: string; // "2x1", "3x2", "2da al 50%", custom text
+}
+
 export interface User {
   id: string;
   name: string;
@@ -18,17 +28,18 @@ export interface User {
 
 export interface Offer {
   id: string;
-  title: string;
+  headline: string;
+  description?: string;
   businessName: string;
-  currentPrice: number;
-  previousPrice: number | null;
-  imageUrl: string | null;
+  isVerifiedBusiness?: boolean;
   category: Category;
-  distance: number; // metres
+  imageUrl?: string | null;
+  pricing?: Pricing;
+  distanceMeters: number;
   createdAt: string; // ISO 8601
   expiresAt: string | null; // ISO 8601
-  validations: number;
-  invalidations: number;
+  confirmationsCount: number;
+  invalidationsCount: number;
   commentsCount: number;
   postedBy: User;
 }
