@@ -102,7 +102,7 @@ export default function FeedScreen() {
           renderItem={({ item }) => (
             <OfferCard
               offer={item}
-              onPress={() => navigation.navigate('OfferDetail', { offerId: item.id })}
+              onPress={() => navigation.navigate('OfferDetail', { offerId: item.id, distanceMeters: item.distanceMeters })}
             />
           )}
           ListHeaderComponent={

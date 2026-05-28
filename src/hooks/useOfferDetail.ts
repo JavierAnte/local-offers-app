@@ -13,7 +13,8 @@ export function useOfferDetail(offerId: string) {
 
   const commentsQuery = useQuery({
     queryKey: ['comments', offerId],
-    queryFn: () => getComments(offerId),
+    queryFn: () => getComments(offerId, offerQuery.data?.commentsCount),
+    enabled: !!offerQuery.data,
   });
 
   const voteMutation = useMutation({
