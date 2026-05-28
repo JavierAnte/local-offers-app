@@ -84,7 +84,7 @@ export type RootStackParamList = {
 
 export type FeedStackParamList = {
   Feed: undefined;
-  OfferDetail: { offerId: string };
+  OfferDetail: { offerId: string; distanceMeters: number };
   Notifications: undefined;
 };
 

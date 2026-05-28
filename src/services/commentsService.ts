@@ -1,9 +1,17 @@
 import type { Comment } from '../types';
-import { MOCK_COMMENTS } from '../constants/mockData';
+import { MOCK_COMMENTS, MOCK_COMMENTS_POOL } from '../constants/mockData';
 import { simulateDelay } from './api';
 
-export async function getComments(offerId: string): Promise<Comment[]> {
+export async function getComments(offerId: string, count?: number): Promise<Comment[]> {
   await simulateDelay(350);
+
+  if (count != null && count > 0) {
+    return Array.from({ length: count }, (_, i) => {
+      const base = MOCK_COMMENTS_POOL[i % MOCK_COMMENTS_POOL.length];
+      return { ...base, id: `mock-${i}`, offerId };
+    });
+  }
+
   return MOCK_COMMENTS[offerId] ?? [];
 }
 

@@ -1,6 +1,7 @@
 import type { Offer, PaginatedResponse, Category, VoteType, Pricing } from '../types';
-import { MOCK_OFFERS } from '../constants/mockData';
-import { simulateDelay } from './api';
+import type { ApiOffer } from '../types/offer';
+import { getNearbyOffers, fetchOfferById, simulateDelay } from './api';
+
 
 export interface GetOffersParams {
   category?: Category | 'all';
@@ -17,15 +18,61 @@ export interface CreateOfferPayload {
   imageUri?: string;
 }
 
+function mapOfferType(offerType: ApiOffer['offerType']): Pricing {
+  switch (offerType.type) {
+    case 'percentage':
+      return { type: 'percentage', percentage: offerType.percentage, label: offerType.label };
+    case 'bundle':
+      return { type: 'bundle', label: offerType.label };
+    case 'price':
+      return {
+        type: 'price',
+        currentPrice: offerType.currentPrice,
+        previousPrice: offerType.previousPrice,
+        label: offerType.label,
+      };
+    case 'text':
+      return { type: 'text', label: offerType.label };
+  }
+}
+
+function mapApiOffer(api: ApiOffer): Offer {
+  return {
+    id: api.id,
+    headline: api.headline,
+    description: api.description ?? undefined,
+    businessName: api.businessName,
+    isVerifiedBusiness: api.isVerifiedBusiness,
+    category: api.category as Category,
+    imageUrl: api.imageUrl ?? null,
+    pricing: mapOfferType(api.offerType),
+    distanceMeters: api.distanceMeters,
+    confirmationsCount: api.confirmationsCount,
+    invalidationsCount: api.invalidationsCount,
+    commentsCount: api.commentsCount,
+    createdAt: api.createdAt,
+    expiresAt: api.expiresAt ?? null,
+    postedBy: {
+      id: String(api.postedBy.id),
+      name: api.postedBy.name,
+      avatarUrl: null,
+      reputationScore: 0,
+      badgesCount: 0,
+    },
+  };
+}
+
 export async function getOffers(
   params: GetOffersParams = {},
 ): Promise<PaginatedResponse<Offer>> {
-  await simulateDelay();
   const { category = 'all', page = 1, limit = 20 } = params;
+
+  const apiOffers = await getNearbyOffers();
+  const mapped = apiOffers.map(mapApiOffer);
+
   const filtered =
-    category === 'all'
-      ? MOCK_OFFERS
-      : MOCK_OFFERS.filter((o) => o.category === category);
+    category === 'all' ? mapped : mapped.filter((o) => o.category === category);
+
   return {
     items: filtered.slice(0, limit),
     total: filtered.length,
@@ -35,10 +82,8 @@ export async function getOffers(
 }
 
 export async function getOfferById(id: string): Promise<Offer> {
-  await simulateDelay(300);
-  const offer = MOCK_OFFERS.find((o) => o.id === id);
-  if (!offer) throw new Error(`Offer ${id} not found`);
-  return offer;
+  const apiOffer = await fetchOfferById(id);
+  return mapApiOffer(apiOffer);
 }
 
 export async function createOffer(payload: CreateOfferPayload): Promise<Offer> {

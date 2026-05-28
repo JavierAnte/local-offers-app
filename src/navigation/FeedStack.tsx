@@ -38,7 +38,23 @@ export default function FeedStack() {
       <Stack.Screen
         name="OfferDetail"
         component={OfferDetailScreen}
-        options={{ title: 'Detalle' }}
+        options={({
+          navigation,
+        }: {
+          navigation: NativeStackNavigationProp<FeedStackParamList, 'OfferDetail'>;
+        }) => ({
+          title: 'Detalles',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Ionicons name="close" size={24} color={colors.text} />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity>
+              <Ionicons name="share-social-outline" size={22} color={colors.text} />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Stack.Screen
         name="Notifications"
