@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# development process documentation (kept local, not committed)
+designDocs/
