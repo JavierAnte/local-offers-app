@@ -15,10 +15,7 @@ export const simulateDelay = (ms = 400): Promise<void> =>
 import { API_BASE_URL } from '../config/api';
 import type { ApiOffer } from '../types/offer';
 
-export async function getNearbyOffers(): Promise<ApiOffer[]> {
-  const latitude = -31.245;
-  const longitude = -64.465;
-
+export async function getNearbyOffers(latitude: number, longitude: number): Promise<ApiOffer[]> {
   const response = await fetch(
     `${API_BASE_URL}/offers/nearby?lat=${latitude}&lng=${longitude}`
   );

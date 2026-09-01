@@ -5,6 +5,7 @@ import {
   FlatList,
   ScrollView,
   TextInput,
+  TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
@@ -12,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useOffers } from '../../hooks/useOffers';
+import type { LocationStatus } from '../../hooks/useLocation';
 import { OfferCard } from '../../components/common/OfferCard';
 import { CategoryChip } from '../../components/common/CategoryChip';
 import { EmptyState } from '../../components/common/EmptyState';
@@ -21,14 +23,34 @@ import { colors } from '../../theme/colors';
 
 type FeedNavProp = NativeStackNavigationProp<FeedStackParamList, 'Feed'>;
 
-function LocationHeader() {
+function LocationHeader({
+  locationStatus,
+  isUsingFallback,
+  onRetry,
+}: {
+  locationStatus: LocationStatus;
+  isUsingFallback: boolean;
+  onRetry: () => void;
+}) {
+  const subtitle =
+    locationStatus === 'loading'
+      ? 'Buscando tu ubicación…'
+      : isUsingFallback
+        ? 'Ubicación no disponible · mostrando zona por defecto'
+        : 'Cerca de ti';
+
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
       <Ionicons name="location" size={20} color={colors.primary} style={{ marginRight: 8 }} />
-      <View>
+      <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>Tu ubicación</Text>
-        <Text style={{ fontSize: 12, color: colors.textMuted }}>Centro · 2km de alcance</Text>
+        <Text style={{ fontSize: 12, color: colors.textMuted }}>{subtitle}</Text>
       </View>
+      {isUsingFallback && (
+        <TouchableOpacity onPress={onRetry} hitSlop={8}>
+          <Text style={{ fontSize: 12, fontWeight: '600', color: colors.primary }}>Reintentar</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -61,16 +83,30 @@ function SearchBar() {
 
 export default function FeedScreen() {
   const navigation = useNavigation<FeedNavProp>();
-  const { data, isLoading, isFetching, refetch, selectedCategory, setSelectedCategory } =
-    useOffers();
+  const {
+    data,
+    isLoading,
+    isFetching,
+    refetch,
+    selectedCategory,
+    setSelectedCategory,
+    locationStatus,
+    isUsingFallback,
+    refreshLocation,
+  } = useOffers();
 
   const offers = data?.items ?? [];
+  const showSpinner = locationStatus === 'loading' || isLoading;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface }}>
       {/* Header */}
       <View style={{ backgroundColor: colors.white, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-        <LocationHeader />
+        <LocationHeader
+          locationStatus={locationStatus}
+          isUsingFallback={isUsingFallback}
+          onRetry={refreshLocation}
+        />
         <SearchBar />
 
         {/* Categories */}
@@ -91,7 +127,7 @@ export default function FeedScreen() {
         </ScrollView>
       </View>
 
-      {isLoading ? (
+      {showSpinner ? (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
