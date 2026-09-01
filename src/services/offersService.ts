@@ -5,6 +5,8 @@ import { API_BASE_URL } from '../config/api';
 
 
 export interface GetOffersParams {
+  latitude: number;
+  longitude: number;
   category?: Category | 'all';
   page?: number;
   limit?: number;
@@ -65,12 +67,10 @@ function mapApiOffer(api: ApiOffer): Offer {
   };
 }
 
-export async function getOffers(
-  params: GetOffersParams = {},
-): Promise<PaginatedResponse<Offer>> {
-  const { category = 'all', page = 1, limit = 20 } = params;
+export async function getOffers(params: GetOffersParams): Promise<PaginatedResponse<Offer>> {
+  const { latitude, longitude, category = 'all', page = 1, limit = 20 } = params;
 
-  const apiOffers = await getNearbyOffers();
+  const apiOffers = await getNearbyOffers(latitude, longitude);
   const mapped = apiOffers.map(mapApiOffer);
 
   const filtered =

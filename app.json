@@ -20,6 +20,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "LocalOffers usa tu ubicación para mostrarte ofertas cercanas y publicar la tuya en el lugar correcto."
+        }
+      ]
+    ]
   }
 }

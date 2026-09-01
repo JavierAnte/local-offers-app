@@ -19,6 +19,7 @@ import { z } from 'zod';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useCreateOffer } from '../../hooks/useCreateOffer';
+import { useLocation } from '../../hooks/useLocation';
 import { useAuthStore } from '../../store/authStore';
 import { MOCK_CATEGORIES } from '../../constants/mockData';
 import { CategoryChip } from '../../components/common/CategoryChip';
@@ -106,6 +107,7 @@ export default function CreateOfferScreen() {
   const navigation = useNavigation<RootNavProp>();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { mutate, isPending } = useCreateOffer();
+  const { coords, isUsingFallback: isUsingFallbackLocation } = useLocation();
   const [imageUri, setImageUri] = useState<string | null>(null);
 
   const {
@@ -164,9 +166,8 @@ export default function CreateOfferScreen() {
         pricing,
         expiresAt: data.expiresAt ? presetToISO(data.expiresAt) : undefined,
         imageUri: imageUri ?? undefined,
-        // TODO: replace with real device location
-        latitude: -31.2419,
-        longitude: -64.4639,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
       },
       {
         onSuccess: () => {
@@ -463,6 +464,12 @@ export default function CreateOfferScreen() {
             </View>
           )}
         </TouchableOpacity>
+
+        {isUsingFallbackLocation && (
+          <Text className="text-xs text-muted mt-6 text-center">
+            No pudimos acceder a tu ubicación — la oferta se publicará usando una ubicación aproximada.
+          </Text>
+        )}
 
         <TouchableOpacity
           onPress={handleSubmit(onSubmit)}
