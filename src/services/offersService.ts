@@ -1,6 +1,7 @@
 import type { Offer, PaginatedResponse, Category, VoteType, Pricing } from '../types';
 import type { ApiOffer } from '../types/offer';
 import { getNearbyOffers, fetchOfferById, simulateDelay } from './api';
+import { API_BASE_URL } from '../config/api';
 
 
 export interface GetOffersParams {
@@ -13,9 +14,11 @@ export interface CreateOfferPayload {
   headline: string;
   businessName: string;
   category: Category;
-  pricing?: Pricing;
+  pricing: Pricing;
   expiresAt?: string;
   imageUri?: string;
+  latitude: number;
+  longitude: number;
 }
 
 function mapOfferType(offerType: ApiOffer['offerType']): Pricing {
@@ -45,7 +48,7 @@ function mapApiOffer(api: ApiOffer): Offer {
     isVerifiedBusiness: api.isVerifiedBusiness,
     category: api.category as Category,
     imageUrl: api.imageUrl ?? null,
-    pricing: mapOfferType(api.offerType),
+    pricing: api.offerType ? mapOfferType(api.offerType) : undefined,
     distanceMeters: api.distanceMeters,
     confirmationsCount: api.confirmationsCount,
     invalidationsCount: api.invalidationsCount,
@@ -87,23 +90,45 @@ export async function getOfferById(id: string): Promise<Offer> {
 }
 
 export async function createOffer(payload: CreateOfferPayload): Promise<Offer> {
-  await simulateDelay(800);
-  const newOffer: Offer = {
-    id: `o${Date.now()}`,
+  const body: Record<string, unknown> = {
+    headline: payload.headline,
+    businessName: payload.businessName,
+    category: payload.category,
+    latitude: payload.latitude,
+    longitude: payload.longitude,
+  };
+
+  body.offerType = payload.pricing;
+  if (payload.expiresAt) body.expiresAt = payload.expiresAt;
+  // imageUri requires multipart upload — not implemented yet
+
+  const response = await fetch(`${API_BASE_URL}/offers`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Failed to create offer: ${response.status} — ${text}`);
+  }
+
+  // Backend returns 201 with empty body — reconstruct a local Offer from the payload
+  return {
+    id: `local-${Date.now()}`,
     headline: payload.headline,
     businessName: payload.businessName,
     category: payload.category,
     pricing: payload.pricing,
     imageUrl: payload.imageUri ?? null,
     expiresAt: payload.expiresAt ?? null,
-    distanceMeters: 100,
+    distanceMeters: 0,
     createdAt: new Date().toISOString(),
     confirmationsCount: 0,
     invalidationsCount: 0,
     commentsCount: 0,
     postedBy: { id: 'me', name: 'Tú', avatarUrl: null, reputationScore: 0, badgesCount: 0 },
   };
-  return newOffer;
 }
 
 export async function voteOffer(_offerId: string, _type: VoteType): Promise<void> {
