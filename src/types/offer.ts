@@ -5,7 +5,7 @@ export type ApiOfferType =
   | { type: 'text'; label: string };
 
 export interface ApiPostedBy {
-  id: number;
+  id: string;
   name: string;
 }
 

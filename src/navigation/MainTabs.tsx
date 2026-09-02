@@ -1,4 +1,4 @@
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FeedStack from './FeedStack';
 import CreateOfferScreen from '../screens/create-offer/CreateOfferScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import { useAuthStore } from '../store/authStore';
 import type { MainTabParamList } from '../types';
 import { colors } from '../theme/colors';
 
@@ -19,6 +20,35 @@ function CenterTabButton({ onPress, children }: BottomTabBarButtonProps) {
       </View>
     </TouchableOpacity>
   );
+}
+
+// Doubles as the login-state indicator: signed-in users see their initial in
+// a filled circle instead of the generic outline icon, tinted by the tab's
+// active/inactive color like the other tab icons.
+function ProfileTabIcon({ color, size }: { color: string; size: number }) {
+  const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  if (isAuthenticated && user) {
+    return (
+      <View
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          backgroundColor: color,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Text style={{ color: colors.white, fontSize: size * 0.55, fontWeight: '700' }}>
+          {user.name[0]?.toUpperCase()}
+        </Text>
+      </View>
+    );
+  }
+
+  return <Ionicons name="person-outline" size={size} color={color} />;
 }
 
 const styles = StyleSheet.create({
@@ -87,9 +117,7 @@ export default function MainTabs() {
         component={ProfileScreen}
         options={{
           tabBarLabel: 'Perfil',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <ProfileTabIcon color={color} size={size} />,
         }}
       />
     </Tab.Navigator>
