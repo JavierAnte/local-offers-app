@@ -89,7 +89,7 @@ export async function getOfferById(id: string): Promise<Offer> {
   return mapApiOffer(apiOffer);
 }
 
-export async function createOffer(payload: CreateOfferPayload): Promise<Offer> {
+export async function createOffer(payload: CreateOfferPayload, token: string): Promise<Offer> {
   const body: Record<string, unknown> = {
     headline: payload.headline,
     businessName: payload.businessName,
@@ -104,7 +104,10 @@ export async function createOffer(payload: CreateOfferPayload): Promise<Offer> {
 
   const response = await fetch(`${API_BASE_URL}/offers`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(body),
   });
 
