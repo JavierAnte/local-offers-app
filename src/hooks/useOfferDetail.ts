@@ -1,10 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getOfferById, voteOffer } from '../services/offersService';
 import { getComments, addComment } from '../services/commentsService';
+import { useAuthStore } from '../store/authStore';
 import type { VoteType } from '../types';
 
 export function useOfferDetail(offerId: string) {
   const queryClient = useQueryClient();
+  const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
 
   const offerQuery = useQuery({
     queryKey: ['offer', offerId],
@@ -13,7 +16,7 @@ export function useOfferDetail(offerId: string) {
 
   const commentsQuery = useQuery({
     queryKey: ['comments', offerId],
-    queryFn: () => getComments(offerId, offerQuery.data?.commentsCount),
+    queryFn: () => getComments(offerId),
     enabled: !!offerQuery.data,
   });
 
@@ -25,7 +28,12 @@ export function useOfferDetail(offerId: string) {
   });
 
   const commentMutation = useMutation({
-    mutationFn: (text: string) => addComment({ offerId, text }),
+    mutationFn: (text: string) => {
+      if (!token || !user) {
+        return Promise.reject(new Error('Debés iniciar sesión para comentar.'));
+      }
+      return addComment({ offerId, text }, token, user);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', offerId] });
     },

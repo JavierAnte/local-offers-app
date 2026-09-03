@@ -1,4 +1,4 @@
-import type { User, Offer, Comment, Notification, Category } from '../types';
+import type { User, Offer, Notification, Category } from '../types';
 
 export const MOCK_USERS: User[] = [
   {
@@ -147,87 +147,6 @@ export const MOCK_OFFERS: Offer[] = [
     invalidationsCount: 0,
     commentsCount: 2,
     postedBy: MOCK_USERS[0],
-  },
-];
-
-export const MOCK_COMMENTS: Record<string, Comment[]> = {
-  o1: [
-    {
-      id: 'c1',
-      offerId: 'o1',
-      text: 'Lo compré esta mañana, confirmo que sigue en oferta.',
-      author: MOCK_USERS[1],
-      createdAt: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
-    },
-    {
-      id: 'c2',
-      offerId: 'o1',
-      text: '¡Gracias por avisar! Muy buena oferta.',
-      author: MOCK_USERS[2],
-      createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-    },
-  ],
-  o2: [
-    {
-      id: 'c3',
-      offerId: 'o2',
-      text: 'El menú también incluye postre hoy.',
-      author: MOCK_USERS[0],
-      createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    },
-  ],
-};
-
-export const MOCK_COMMENTS_POOL: Omit<Comment, 'id' | 'offerId'>[] = [
-  {
-    text: 'Confirmado, acabo de estar ahí y sigue vigente.',
-    author: MOCK_USERS[0],
-    createdAt: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
-  },
-  {
-    text: '¡Excelente oferta! Lo recomiendo.',
-    author: MOCK_USERS[1],
-    createdAt: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
-  },
-  {
-    text: '¿Hasta qué hora está disponible?',
-    author: MOCK_USERS[2],
-    createdAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-  },
-  {
-    text: 'Muy buena calidad, lo recomiendo.',
-    author: MOCK_USERS[0],
-    createdAt: new Date(Date.now() - 1000 * 60 * 55).toISOString(),
-  },
-  {
-    text: 'Fui hace un rato y estaba todo bien.',
-    author: MOCK_USERS[1],
-    createdAt: new Date(Date.now() - 1000 * 60 * 70).toISOString(),
-  },
-  {
-    text: '¿Aplica también para productos en góndola?',
-    author: MOCK_USERS[2],
-    createdAt: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-  },
-  {
-    text: 'Lo vi antes de ayer y seguía igual de bien.',
-    author: MOCK_USERS[0],
-    createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-  },
-  {
-    text: 'Gracias por compartir, ¡voy para allá!',
-    author: MOCK_USERS[1],
-    createdAt: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
-  },
-  {
-    text: 'Confirmado también por mi parte.',
-    author: MOCK_USERS[2],
-    createdAt: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-  },
-  {
-    text: '¿Tienen para llevar o solo en el local?',
-    author: MOCK_USERS[0],
-    createdAt: new Date(Date.now() - 1000 * 60 * 210).toISOString(),
   },
 ];
 

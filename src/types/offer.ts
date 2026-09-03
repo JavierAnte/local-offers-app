@@ -9,6 +9,14 @@ export interface ApiPostedBy {
   name: string;
 }
 
+export interface ApiComment {
+  id: string;
+  offerId: string;
+  body: string;
+  createdAt: string;
+  postedBy: ApiPostedBy;
+}
+
 export interface ApiOffer {
   id: string;
   headline: string;
