@@ -1,6 +1,6 @@
 import type { Offer, PaginatedResponse, Category, VoteType, Pricing } from '../types';
 import type { ApiOffer } from '../types/offer';
-import { getNearbyOffers, fetchOfferById, simulateDelay } from './api';
+import { getNearbyOffers, fetchOfferById } from './api';
 import { API_BASE_URL } from '../config/api';
 
 
@@ -134,7 +134,18 @@ export async function createOffer(payload: CreateOfferPayload, token: string): P
   };
 }
 
-export async function voteOffer(_offerId: string, _type: VoteType): Promise<void> {
-  await simulateDelay(300);
-  // No-op in mock — real API: POST /offers/:id/votes
+export async function voteOffer(offerId: string, type: VoteType, token: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/offers/${offerId}/votes`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ type }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Failed to vote: ${response.status} — ${text}`);
+  }
 }
