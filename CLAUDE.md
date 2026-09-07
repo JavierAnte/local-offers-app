@@ -51,7 +51,7 @@ The 'Perfil' tab icon in [MainTabs.tsx](src/navigation/MainTabs.tsx) is the app'
 - All API calls go through service functions in [src/services/](src/services/).
 - Hooks in [src/hooks/](src/hooks/) wrap TanStack Query (`useQuery` / `useMutation`) and are the only place components fetch or mutate data.
 - Auth state (`user`, `token`, `isAuthenticated`, `login`, `logout`) lives in [src/store/authStore.ts](src/store/authStore.ts) via Zustand, persisted to `expo-secure-store` (`persist` middleware, key `auth-storage`). `App.tsx` blocks on `hasHydrated` before mounting `RootNavigator`, so a restored session is available before any screen's auth checks run — don't remove that gate or `CreateOfferScreen`'s auth redirect will flash for a moment on a real device with a saved session.
-- Query cache invalidation on mutations: `useCreateOffer` invalidates `['offers']` on success.
+- Query cache invalidation on mutations: `useCreateOffer` invalidates `['offers']` on success. `useOfferDetail`'s `voteMutation`/`commentMutation` invalidate their own detail-scoped query (`['offer', offerId]`/`['comments', offerId]`) *and* `['offers']`, so the Feed's confirmations/invalidations/commentsCount don't go stale after voting or commenting on an offer from its detail screen — easy to miss since the detail screen itself looks correct either way.
 
 ### Backend integration status (Phase 3, in progress)
 

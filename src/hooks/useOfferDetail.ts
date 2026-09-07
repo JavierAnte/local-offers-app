@@ -29,6 +29,7 @@ export function useOfferDetail(offerId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['offer', offerId] });
+      queryClient.invalidateQueries({ queryKey: ['offers'] });
     },
   });
 
@@ -41,6 +42,8 @@ export function useOfferDetail(offerId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', offerId] });
+      queryClient.invalidateQueries({ queryKey: ['offer', offerId] });
+      queryClient.invalidateQueries({ queryKey: ['offers'] });
     },
   });
 
