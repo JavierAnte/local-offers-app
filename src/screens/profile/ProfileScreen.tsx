@@ -25,7 +25,7 @@ export default function ProfileScreen() {
           Inicia sesión para publicar ofertas y ganar reputación.
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('LoginModal', { redirectBack: false })}
+          onPress={() => navigation.navigate('LoginModal', {})}
           className="bg-primary px-8 py-3 rounded-2xl"
         >
           <Text className="text-white font-bold">Iniciar sesión</Text>

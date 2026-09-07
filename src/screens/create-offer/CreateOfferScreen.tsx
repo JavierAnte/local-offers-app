@@ -125,7 +125,7 @@ export default function CreateOfferScreen() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigation.navigate('LoginModal', { redirectBack: false });
+      navigation.navigate('LoginModal', {});
     }
   }, [isAuthenticated]);
 
