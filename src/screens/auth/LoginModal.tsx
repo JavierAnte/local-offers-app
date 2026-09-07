@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useForm, Controller } from 'react-hook-form';
@@ -12,6 +13,7 @@ import type { RootStackParamList } from '../../types';
 import { colors } from '../../theme/colors';
 
 type NavProp = NativeStackNavigationProp<RootStackParamList, 'LoginModal'>;
+type LoginModalRouteProp = RouteProp<RootStackParamList, 'LoginModal'>;
 type Mode = 'login' | 'register';
 
 const authSchema = z
@@ -31,6 +33,8 @@ type AuthForm = z.infer<typeof authSchema>;
 
 export default function LoginModal() {
   const navigation = useNavigation<NavProp>();
+  const route = useRoute<LoginModalRouteProp>();
+  const redirectTo = route.params?.redirectTo;
   const [mode, setMode] = useState<Mode>('login');
   const [showPassword, setShowPassword] = useState(false);
   const loginMutation = useLogin();
@@ -55,7 +59,16 @@ export default function LoginModal() {
   }
 
   function onSubmit(data: AuthForm) {
-    const onSuccess = () => navigation.goBack();
+    const onSuccess = () => {
+      if (redirectTo) {
+        navigation.navigate('MainTabs', {
+          screen: 'FeedTab',
+          params: { screen: 'OfferDetail', params: redirectTo },
+        });
+      } else {
+        navigation.goBack();
+      }
+    };
     if (data.mode === 'login') {
       loginMutation.mutate({ email: data.email, password: data.password }, { onSuccess });
     } else {

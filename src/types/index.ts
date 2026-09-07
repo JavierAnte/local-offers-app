@@ -1,3 +1,5 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
 export type Category =
   | 'food'
   | 'grocery'
@@ -79,8 +81,8 @@ export interface PaginatedResponse<T> {
 
 // Navigation param lists
 export type RootStackParamList = {
-  MainTabs: undefined;
-  LoginModal: { redirectBack?: boolean };
+  MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
+  LoginModal: { redirectTo?: { offerId: string; distanceMeters: number } };
 };
 
 export type FeedStackParamList = {
@@ -90,7 +92,7 @@ export type FeedStackParamList = {
 };
 
 export type MainTabParamList = {
-  FeedTab: undefined;
+  FeedTab: NavigatorScreenParams<FeedStackParamList> | undefined;
   CreateOffer: undefined;
   Profile: undefined;
 };

@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -182,7 +184,7 @@ export default function OfferDetailScreen() {
 
   function requireAuth(action: () => void) {
     if (!isAuthenticated) {
-      rootNav.navigate('LoginModal', { redirectBack: true });
+      rootNav.navigate('LoginModal', { redirectTo: { offerId, distanceMeters } });
     } else {
       action();
     }
@@ -202,7 +204,10 @@ export default function OfferDetailScreen() {
     : null;
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.white }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: colors.white }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
         {/* Hero image */}
         {offer.imageUrl ? (
@@ -459,6 +464,6 @@ export default function OfferDetailScreen() {
           <Ionicons name="send" size={16} color={colors.white} />
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
