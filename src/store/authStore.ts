@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import type { User } from '../types';
 
@@ -12,11 +13,21 @@ interface AuthState {
   logout: () => void;
 }
 
-const secureStorage: StateStorage = {
-  getItem: async (name) => (await SecureStore.getItemAsync(name)) ?? null,
-  setItem: async (name, value) => SecureStore.setItemAsync(name, value),
-  removeItem: async (name) => SecureStore.deleteItemAsync(name),
-};
+// expo-secure-store has no web implementation (its web build is a stub),
+// so fall back to localStorage there — dev/testing only, native still uses
+// the real secure storage.
+const secureStorage: StateStorage =
+  Platform.OS === 'web'
+    ? {
+        getItem: async (name) => localStorage.getItem(name),
+        setItem: async (name, value) => localStorage.setItem(name, value),
+        removeItem: async (name) => localStorage.removeItem(name),
+      }
+    : {
+        getItem: async (name) => (await SecureStore.getItemAsync(name)) ?? null,
+        setItem: async (name, value) => SecureStore.setItemAsync(name, value),
+        removeItem: async (name) => SecureStore.deleteItemAsync(name),
+      };
 
 export const useAuthStore = create<AuthState>()(
   persist(
