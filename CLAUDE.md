@@ -20,9 +20,15 @@ No test runner or linter is configured yet.
 
 ## SDK and Expo Go
 
-This app runs on **Expo SDK 54** (downgraded from 56 to support Expo Go). When Expo Go adds SDK 56 support, upgrade back. Always check the versioned docs at https://docs.expo.dev/versions/v54.0.0/ before writing Expo-specific code.
+This app runs on **Expo SDK 57** (upgraded from 54 on 2026-09-07 after the Expo Go app itself moved past SDK 54, breaking `npx expo start` on physical devices — the project's SDK version, not just the client, has to track whatever Expo Go currently supports). Always check the versioned docs at https://docs.expo.dev/versions/latest/ before writing Expo-specific code. When Expo Go moves to a newer SDK again, upgrade with `npx expo install expo@<version> && npx expo install --fix`, then run `npx expo-doctor` to catch missing peer deps (SDK 57 needed `expo-font` and `react-native-worklets` added explicitly, both required transitively by `@expo/vector-icons` and `react-native-reanimated` but not auto-installed).
 
-`babel-preset-expo` must stay pinned to `~54.0.10` — installing it without a version constraint pulls the latest (SDK 56), which breaks the Metro bundler with `[runtime not ready]`.
+`babel-preset-expo` tracks whatever `npx expo install --fix` sets it to for the current SDK — don't hand-pin it unless you hit a specific bundler bug again (SDK 54 briefly needed a `~54.0.10` pin to dodge a `[runtime not ready]` Metro crash; not needed as of SDK 57).
+
+### Web support
+
+`react-dom` and `react-native-web` are installed so `npx expo start --web` works for quick testing without a device/simulator (useful on Linux, where there's no iOS simulator and no lightweight Android option). Two Metro/web-specific workarounds exist purely for this:
+- [metro.config.js](metro.config.js) forces `zustand`/`zustand/*` to resolve their CommonJS build on web — zustand's ESM build's `devtools` middleware references a bare `import.meta`, which is a parse-time `SyntaxError` when Metro serves the web bundle as a plain (non-`type="module"`) `<script>`. Native platforms are unaffected.
+- [src/store/authStore.ts](src/store/authStore.ts)'s `secureStorage` falls back to `localStorage` when `Platform.OS === 'web'` — `expo-secure-store` has no web implementation (its web build is a stub `export default {}`), so calling it on web throws and the zustand `persist` hydration never resolves, leaving the app stuck on the loading spinner indefinitely (looks like a blank screen). Native still uses the real `SecureStore`.
 
 ## Architecture
 
@@ -51,11 +57,13 @@ The 'Perfil' tab icon in [MainTabs.tsx](src/navigation/MainTabs.tsx) is the app'
 - All API calls go through service functions in [src/services/](src/services/).
 - Hooks in [src/hooks/](src/hooks/) wrap TanStack Query (`useQuery` / `useMutation`) and are the only place components fetch or mutate data.
 - Auth state (`user`, `token`, `isAuthenticated`, `login`, `logout`) lives in [src/store/authStore.ts](src/store/authStore.ts) via Zustand, persisted to `expo-secure-store` (`persist` middleware, key `auth-storage`). `App.tsx` blocks on `hasHydrated` before mounting `RootNavigator`, so a restored session is available before any screen's auth checks run — don't remove that gate or `CreateOfferScreen`'s auth redirect will flash for a moment on a real device with a saved session.
-- Query cache invalidation on mutations: `useCreateOffer` invalidates `['offers']` on success.
+- Query cache invalidation on mutations: `useCreateOffer` invalidates `['offers']` on success. `useOfferDetail`'s `voteMutation`/`commentMutation` invalidate their own detail-scoped query (`['offer', offerId]`/`['comments', offerId]`) *and* `['offers']`, so the Feed's confirmations/invalidations/commentsCount don't go stale after voting or commenting on an offer from its detail screen — easy to miss since the detail screen itself looks correct either way.
 
 ### Backend integration status (Phase 3, in progress)
 
-Real: [src/services/offersService.ts](src/services/offersService.ts)'s `getOffers`/`getOfferById`/`createOffer` (`GET /offers/nearby`, `GET /offers/{id}`, `POST /offers` via plain `fetch`, defined in `api.ts`/`offersService.ts`), [src/services/authService.ts](src/services/authService.ts)'s `register`/`login` (`POST /auth/register`, `POST /auth/login`), and [src/services/commentsService.ts](src/services/commentsService.ts)'s `getComments`/`addComment` (`GET`/`POST /offers/{id}/comments`, auth required on POST). Still mock-backed via `simulateDelay()` + [src/constants/mockData.ts](src/constants/mockData.ts): `voteOffer` and all of `userService.ts`. When wiring a new service function to the real API, follow the pattern already used for `getOffers`.
+Real: [src/services/offersService.ts](src/services/offersService.ts)'s `getOffers`/`getOfferById`/`createOffer`/`voteOffer` (`GET /offers/nearby`, `GET /offers/{id}`, `POST /offers`, `POST /offers/{id}/votes` via plain `fetch`, defined in `api.ts`/`offersService.ts`; `voteOffer` requires a token, auth-gated like commenting), [src/services/authService.ts](src/services/authService.ts)'s `register`/`login` (`POST /auth/register`, `POST /auth/login`), and [src/services/commentsService.ts](src/services/commentsService.ts)'s `getComments`/`addComment` (`GET`/`POST /offers/{id}/comments`, auth required on POST).
+
+Still mock-backed via `simulateDelay()` + [src/constants/mockData.ts](src/constants/mockData.ts): all of `userService.ts` (step 7 of the roadmap — profile/"my offers", not built yet). When wiring a new service function to the real API, follow the pattern already used for `getOffers`.
 
 - `API_BASE_URL` in [src/config/api.ts](src/config/api.ts) is a hardcoded LAN IP including the `/api/v1` prefix the backend routes live under — update the IP to match your machine's when running the backend locally (Expo Go can't reach `localhost`).
 - An `axios` client exists commented out in `api.ts` — the live code path uses `fetch` instead; don't assume axios is active.

@@ -333,26 +333,52 @@ export default function OfferDetailScreen() {
             borderBottomColor: colors.border,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 }}>
             <Ionicons name="checkmark-circle" size={18} color={colors.success} />
             <Text style={{ fontSize: 14, color: colors.success, fontWeight: '500' }}>
               {offer.confirmationsCount} personas confirmaron esta oferta
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => requireAuth(() => voteMutation.mutate('validate'))}
-            style={{
-              borderWidth: 1.5,
-              borderColor: colors.success,
-              borderRadius: 10,
-              paddingVertical: 14,
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ color: colors.success, fontSize: 15, fontWeight: '600' }}>
-              Confirmar oferta
-            </Text>
-          </TouchableOpacity>
+          {offer.invalidationsCount > 0 && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+              <Ionicons name="close-circle" size={18} color={colors.danger} />
+              <Text style={{ fontSize: 14, color: colors.danger, fontWeight: '500' }}>
+                {offer.invalidationsCount} personas dijeron que ya no es válida
+              </Text>
+            </View>
+          )}
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: offer.invalidationsCount > 0 ? 0 : 12 }}>
+            <TouchableOpacity
+              onPress={() => requireAuth(() => voteMutation.mutate('validate'))}
+              style={{
+                flex: 1,
+                borderWidth: 1.5,
+                borderColor: colors.success,
+                borderRadius: 10,
+                paddingVertical: 14,
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ color: colors.success, fontSize: 15, fontWeight: '600' }}>
+                Confirmar oferta
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => requireAuth(() => voteMutation.mutate('invalidate'))}
+              style={{
+                flex: 1,
+                borderWidth: 1.5,
+                borderColor: colors.danger,
+                borderRadius: 10,
+                paddingVertical: 14,
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ color: colors.danger, fontSize: 15, fontWeight: '600' }}>
+                Ya no es válida
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Comments */}

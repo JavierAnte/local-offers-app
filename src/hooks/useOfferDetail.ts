@@ -21,9 +21,15 @@ export function useOfferDetail(offerId: string) {
   });
 
   const voteMutation = useMutation({
-    mutationFn: (type: VoteType) => voteOffer(offerId, type),
+    mutationFn: (type: VoteType) => {
+      if (!token) {
+        return Promise.reject(new Error('Debés iniciar sesión para votar.'));
+      }
+      return voteOffer(offerId, type, token);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['offer', offerId] });
+      queryClient.invalidateQueries({ queryKey: ['offers'] });
     },
   });
 
@@ -36,6 +42,8 @@ export function useOfferDetail(offerId: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', offerId] });
+      queryClient.invalidateQueries({ queryKey: ['offer', offerId] });
+      queryClient.invalidateQueries({ queryKey: ['offers'] });
     },
   });
 

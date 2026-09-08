@@ -28,7 +28,9 @@
           "locationWhenInUsePermission": "LocalOffers usa tu ubicación para mostrarte ofertas cercanas y publicar la tuya en el lugar correcto."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-status-bar",
+      "expo-font"
     ]
   }
 }
