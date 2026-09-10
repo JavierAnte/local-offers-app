@@ -28,6 +28,14 @@
           "locationWhenInUsePermission": "LocalOffers usa tu ubicación para mostrarte ofertas cercanas y publicar la tuya en el lugar correcto."
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "LocalOffers usa tu cámara para sacarle una foto a la oferta que estás publicando.",
+          "photosPermission": "LocalOffers accede a tus fotos para que puedas elegir una imagen de tu galería.",
+          "microphonePermission": false
+        }
+      ],
       "expo-secure-store",
       "expo-status-bar",
       "expo-font"

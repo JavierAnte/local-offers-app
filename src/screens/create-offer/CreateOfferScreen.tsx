@@ -109,6 +109,9 @@ export default function CreateOfferScreen() {
   const { mutate, isPending } = useCreateOffer();
   const { coords, isUsingFallback: isUsingFallbackLocation } = useLocation();
   const [imageUri, setImageUri] = useState<string | null>(null);
+  const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(
+    null,
+  );
 
   const {
     control,
@@ -133,15 +136,42 @@ export default function CreateOfferScreen() {
     useCallback(() => {
       reset({ category: 'other', pricingType: 'percentage' });
       setImageUri(null);
+      setImageDimensions(null);
     }, [reset]),
   );
 
+  function applyPickedAsset(asset: ImagePicker.ImagePickerAsset) {
+    setImageUri(asset.uri);
+    setImageDimensions({ width: asset.width, height: asset.height });
+  }
+
   async function pickImage() {
+    // Camera first — a photo taken right there is the common case for
+    // an offer. Gallery is the fallback: permission refused, or no
+    // camera hardware (e.g. a simulator), not a user preference toggle.
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (permission.granted) {
+      try {
+        const result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ['images'],
+          quality: 0.8,
+        });
+        if (!result.canceled) {
+          applyPickedAsset(result.assets[0]);
+        }
+        return; // user had a working camera — respect a deliberate cancel, don't fall back
+      } catch (error) {
+        console.warn('[pickImage] camera unavailable, falling back to gallery', error);
+      }
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       quality: 0.8,
     });
-    if (!result.canceled) setImageUri(result.assets[0].uri);
+    if (!result.canceled) {
+      applyPickedAsset(result.assets[0]);
+    }
   }
 
   function onSubmit(data: CreateOfferForm) {
@@ -166,6 +196,8 @@ export default function CreateOfferScreen() {
         pricing,
         expiresAt: data.expiresAt ? presetToISO(data.expiresAt) : undefined,
         imageUri: imageUri ?? undefined,
+        imageWidth: imageDimensions?.width,
+        imageHeight: imageDimensions?.height,
         latitude: coords.latitude,
         longitude: coords.longitude,
       },
@@ -173,13 +205,14 @@ export default function CreateOfferScreen() {
         onSuccess: () => {
           reset();
           setImageUri(null);
+          setImageDimensions(null);
           Alert.alert(
             '¡Oferta publicada!',
             'Tu oferta ya está visible para las personas cercanas.',
             [{
               text: 'Ver ofertas',
               onPress: () => navigation.dispatch(
-                CommonActions.navigate({ name: 'FeedTab' })
+                CommonActions.navigate('FeedTab')
               ),
             }],
           );
