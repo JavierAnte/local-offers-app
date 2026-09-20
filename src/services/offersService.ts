@@ -52,7 +52,7 @@ function mapOfferType(offerType: ApiOffer['offerType']): Pricing {
   }
 }
 
-function mapApiOffer(api: ApiOffer): Offer {
+export function mapApiOffer(api: ApiOffer): Offer {
   return {
     id: api.id,
     headline: api.headline,
@@ -62,7 +62,7 @@ function mapApiOffer(api: ApiOffer): Offer {
     category: api.category as Category,
     imageUrl: api.imageUrl ?? null,
     pricing: api.offerType ? mapOfferType(api.offerType) : undefined,
-    distanceMeters: api.distanceMeters,
+    distanceMeters: api.distanceMeters ?? 0,
     confirmationsCount: api.confirmationsCount,
     invalidationsCount: api.invalidationsCount,
     commentsCount: api.commentsCount,
