@@ -8,6 +8,7 @@ import { colors } from '../../theme/colors';
 interface OfferCardProps {
   offer: Offer;
   onPress: () => void;
+  showDistance?: boolean;
 }
 
 const CATEGORY_ICON: Record<Category, string> = {
@@ -136,7 +137,7 @@ function PricingBadge({ pricing }: { pricing: Pricing }) {
   return null;
 }
 
-export function OfferCard({ offer, onPress }: OfferCardProps) {
+export function OfferCard({ offer, onPress, showDistance = true }: OfferCardProps) {
   const timeRemaining = formatTimeRemaining(offer.expiresAt);
 
   return (
@@ -190,12 +191,14 @@ export function OfferCard({ offer, onPress }: OfferCardProps) {
 
         {/* Meta row */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 10 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
-            <Ionicons name="location-outline" size={11} color={colors.textMuted} />
-            <Text style={{ fontSize: 11, color: colors.textMuted }}>
-              {formatDistance(offer.distanceMeters)}
-            </Text>
-          </View>
+          {showDistance && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+              <Ionicons name="location-outline" size={11} color={colors.textMuted} />
+              <Text style={{ fontSize: 11, color: colors.textMuted }}>
+                {formatDistance(offer.distanceMeters)}
+              </Text>
+            </View>
+          )}
           {timeRemaining ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
               <Ionicons name="time-outline" size={11} color={colors.textMuted} />

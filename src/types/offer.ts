@@ -26,7 +26,7 @@ export interface ApiOffer {
   category: string;
   imageUrl: string | null;
   offerType: ApiOfferType;
-  distanceMeters: number;
+  distanceMeters?: number;
   latitude: number;
   longitude: number;
   confirmationsCount: number;
