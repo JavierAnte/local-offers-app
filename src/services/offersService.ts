@@ -17,6 +17,7 @@ export interface GetOffersParams {
   latitude: number;
   longitude: number;
   category?: Category | 'all';
+  q?: string;
   page?: number;
   limit?: number;
 }
@@ -79,17 +80,19 @@ export function mapApiOffer(api: ApiOffer): Offer {
 }
 
 export async function getOffers(params: GetOffersParams): Promise<PaginatedResponse<Offer>> {
-  const { latitude, longitude, category = 'all', page = 1, limit = 20 } = params;
+  const { latitude, longitude, category = 'all', q, page = 1 } = params;
 
-  const apiOffers = await getNearbyOffers(latitude, longitude);
+  const apiOffers = await getNearbyOffers({
+    latitude,
+    longitude,
+    category: category === 'all' ? undefined : category,
+    q: q?.trim() || undefined,
+  });
   const mapped = apiOffers.map(mapApiOffer);
 
-  const filtered =
-    category === 'all' ? mapped : mapped.filter((o) => o.category === category);
-
   return {
-    items: filtered.slice(0, limit),
-    total: filtered.length,
+    items: mapped,
+    total: mapped.length,
     page,
     hasMore: false,
   };

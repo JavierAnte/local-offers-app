@@ -15,10 +15,22 @@ export const simulateDelay = (ms = 400): Promise<void> =>
 import { API_BASE_URL } from '../config/api';
 import type { ApiOffer, ApiComment } from '../types/offer';
 
-export async function getNearbyOffers(latitude: number, longitude: number): Promise<ApiOffer[]> {
-  const response = await fetch(
-    `${API_BASE_URL}/offers/nearby?lat=${latitude}&lng=${longitude}`
-  );
+interface NearbyOfferParams {
+  latitude: number;
+  longitude: number;
+  category?: string;
+  q?: string;
+}
+
+export async function getNearbyOffers(params: NearbyOfferParams): Promise<ApiOffer[]> {
+  const query = new URLSearchParams({
+    lat: String(params.latitude),
+    lng: String(params.longitude),
+  });
+  if (params.category) query.set('category', params.category);
+  if (params.q) query.set('q', params.q);
+
+  const response = await fetch(`${API_BASE_URL}/offers/nearby?${query.toString()}`);
 
   if (!response.ok) {
     throw new Error('Failed to fetch offers');

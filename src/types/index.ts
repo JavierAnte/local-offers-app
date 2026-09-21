@@ -86,7 +86,7 @@ export type RootStackParamList = {
 };
 
 export type FeedStackParamList = {
-  Feed: undefined;
+  Feed: { resetFiltersKey?: number } | undefined;
   OfferDetail: { offerId: string; distanceMeters: number };
   Notifications: undefined;
 };
