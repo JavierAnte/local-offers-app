@@ -1,4 +1,4 @@
-import type { User, Offer, Notification, Category } from '../types';
+import type { User, Offer, Category } from '../types';
 
 export const MOCK_USERS: User[] = [
   {
@@ -147,33 +147,6 @@ export const MOCK_OFFERS: Offer[] = [
     invalidationsCount: 0,
     commentsCount: 2,
     postedBy: MOCK_USERS[0],
-  },
-];
-
-export const MOCK_NOTIFICATIONS: Notification[] = [
-  {
-    id: 'n1',
-    type: 'offer_validated',
-    message: 'Tu oferta "50% en frutas" recibió 5 validaciones.',
-    offerId: 'o1',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-  },
-  {
-    id: 'n2',
-    type: 'comment_received',
-    message: 'Carlos comentó en tu oferta "2x1 en pizzas".',
-    offerId: 'o2',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-  },
-  {
-    id: 'n3',
-    type: 'offer_expiring',
-    message: 'Tu oferta "Happy hour" expira en 3 horas.',
-    offerId: 'o3',
-    read: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
   },
 ];
 

@@ -65,10 +65,10 @@ export interface Vote {
 
 export interface Notification {
   id: string;
-  type: 'offer_validated' | 'offer_invalidated' | 'comment_received' | 'offer_expiring';
-  message: string;
-  offerId: string | null;
-  read: boolean;
+  type: 'offer_validated' | 'offer_invalidated' | 'comment_received';
+  offerId: string;
+  offerHeadline: string;
+  actor: Pick<User, 'id' | 'name'>;
   createdAt: string;
 }
 
@@ -82,12 +82,12 @@ export interface PaginatedResponse<T> {
 // Navigation param lists
 export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
-  LoginModal: { redirectTo?: { offerId: string; distanceMeters: number } };
+  LoginModal: { redirectTo?: { offerId: string; distanceMeters?: number } };
 };
 
 export type FeedStackParamList = {
-  Feed: undefined;
-  OfferDetail: { offerId: string; distanceMeters: number };
+  Feed: { resetFiltersKey?: number } | undefined;
+  OfferDetail: { offerId: string; distanceMeters?: number };
   Notifications: undefined;
 };
 

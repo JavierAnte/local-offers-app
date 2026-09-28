@@ -96,6 +96,14 @@ export default function MainTabs() {
       <Tab.Screen
         name="FeedTab"
         component={FeedStack}
+        listeners={({ navigation }) => ({
+          tabPress: () => {
+            navigation.navigate('FeedTab', {
+              screen: 'Feed',
+              params: { resetFiltersKey: Date.now() },
+            });
+          },
+        })}
         options={{
           tabBarLabel: 'Inicio',
           tabBarIcon: ({ color, size }) => (
