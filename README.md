@@ -1,6 +1,6 @@
 # LocalOffers App
 
-Expo/React Native client for LocalOffers. It supports nearby discovery, email/password authentication, offer publishing with photos, comments, and validate/invalidate voting. Product-level documentation lives in the sibling coordination repository's [`docs/`](../docs/) directory.
+Expo/React Native client for LocalOffers. It supports nearby discovery, email/password authentication, offer publishing with photos, comments, validate/invalidate voting, and in-app activity notifications. Product-level documentation lives in the sibling coordination repository's [`docs/`](../docs/) directory.
 
 ## Stack
 

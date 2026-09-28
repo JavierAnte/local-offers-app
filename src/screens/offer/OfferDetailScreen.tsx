@@ -254,12 +254,14 @@ export default function OfferDetailScreen() {
             )}
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <Ionicons name="location-outline" size={13} color={colors.textMuted} />
-              <Text style={{ fontSize: 12, color: colors.textMuted }}>
-                {formatDistance(distanceMeters)} de distancia
-              </Text>
-            </View>
+            {distanceMeters != null ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Ionicons name="location-outline" size={13} color={colors.textMuted} />
+                <Text style={{ fontSize: 12, color: colors.textMuted }}>
+                  {formatDistance(distanceMeters)} de distancia
+                </Text>
+              </View>
+            ) : null}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <Ionicons name="time-outline" size={13} color={colors.textMuted} />
               <Text style={{ fontSize: 12, color: colors.textMuted }}>
