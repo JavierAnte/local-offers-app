@@ -39,6 +39,8 @@ export interface Offer {
   imageUrl?: string | null;
   pricing?: Pricing;
   distanceMeters: number;
+  latitude: number;
+  longitude: number;
   createdAt: string; // ISO 8601
   expiresAt: string | null; // ISO 8601
   confirmationsCount: number;

@@ -57,6 +57,7 @@ export function useOffers() {
     setSearchText,
     clearFilters,
     hasActiveFilters: selectedCategory !== 'all' || searchText.trim() !== '',
+    coords,
     locationStatus,
     isUsingFallback,
     refreshLocation,
