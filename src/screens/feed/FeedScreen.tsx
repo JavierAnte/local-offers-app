@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -18,11 +19,69 @@ import type { LocationStatus } from '../../hooks/useLocation';
 import { OfferCard } from '../../components/common/OfferCard';
 import { CategoryChip } from '../../components/common/CategoryChip';
 import { EmptyState } from '../../components/common/EmptyState';
+import OfferMap from '../../components/feed/OfferMap';
 import { MOCK_CATEGORIES } from '../../constants/mockData';
 import type { FeedStackParamList, Category } from '../../types';
 import { colors } from '../../theme/colors';
 
 type FeedNavProp = NativeStackNavigationProp<FeedStackParamList, 'Feed'>;
+type FeedView = 'list' | 'map';
+
+function ViewToggle({ value, onChange }: { value: FeedView; onChange: (value: FeedView) => void }) {
+  return (
+    <View
+      style={{
+        alignSelf: 'center',
+        flexDirection: 'row',
+        backgroundColor: colors.surface,
+        borderRadius: 9,
+        padding: 3,
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: colors.border,
+      }}
+    >
+      {([
+        { value: 'list' as const, label: 'Lista', icon: 'list-outline' as const },
+        { value: 'map' as const, label: 'Mapa', icon: 'map-outline' as const },
+      ]).map((option) => {
+        const selected = value === option.value;
+        return (
+          <TouchableOpacity
+            key={option.value}
+            onPress={() => onChange(option.value)}
+            accessibilityRole="button"
+            accessibilityState={{ selected }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 6,
+              paddingHorizontal: 18,
+              paddingVertical: 7,
+              borderRadius: 7,
+              backgroundColor: selected ? colors.white : 'transparent',
+            }}
+          >
+            <Ionicons
+              name={option.icon}
+              size={16}
+              color={selected ? colors.primary : colors.textMuted}
+            />
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: selected ? '700' : '500',
+                color: selected ? colors.primary : colors.textSecondary,
+              }}
+            >
+              {option.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
 
 function LocationHeader({
   locationStatus,
@@ -108,6 +167,8 @@ function SearchBar({
 export default function FeedScreen() {
   const navigation = useNavigation<FeedNavProp>();
   const route = useRoute<RouteProp<FeedStackParamList, 'Feed'>>();
+  const [viewMode, setViewMode] = useState<FeedView>('list');
+  const supportsMap = Platform.OS === 'android' || Platform.OS === 'ios';
   const {
     data,
     isLoading,
@@ -120,6 +181,7 @@ export default function FeedScreen() {
     setSearchText,
     clearFilters,
     hasActiveFilters,
+    coords,
     locationStatus,
     isUsingFallback,
     refreshLocation,
@@ -165,6 +227,7 @@ export default function FeedScreen() {
             />
           ))}
         </ScrollView>
+        {supportsMap ? <ViewToggle value={viewMode} onChange={setViewMode} /> : null}
       </View>
 
       {showSpinner ? (
@@ -191,54 +254,87 @@ export default function FeedScreen() {
               </Text>
             </TouchableOpacity>
           ) : null}
-          <FlatList
-            data={offers}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <OfferCard
-                offer={item}
-                onPress={() => navigation.navigate('OfferDetail', { offerId: item.id, distanceMeters: item.distanceMeters })}
+          {supportsMap && viewMode === 'map' ? (
+            <View style={{ flex: 1 }}>
+              <OfferMap
+                offers={offers}
+                userCoords={coords}
+                isUsingFallback={isUsingFallback}
+                hasActiveFilters={hasActiveFilters}
+                onClearFilters={clearFilters}
+                onOfferPress={(offer) =>
+                  navigation.navigate('OfferDetail', {
+                    offerId: offer.id,
+                    distanceMeters: offer.distanceMeters,
+                  })
+                }
               />
-            )}
-            ListHeaderComponent={
-              offers.length > 0 ? (
-                <Text
+              {isFetching ? (
+                <View
                   style={{
-                    fontSize: 13,
-                    color: colors.textMuted,
-                    paddingHorizontal: 16,
-                    paddingTop: 12,
-                    paddingBottom: 4,
+                    position: 'absolute',
+                    top: 12,
+                    right: 16,
+                    backgroundColor: colors.white,
+                    borderRadius: 18,
+                    padding: 8,
+                    elevation: 3,
                   }}
                 >
-                  {offers.length} oferta{offers.length !== 1 ? 's' : ''} cerca de ti
-                </Text>
-              ) : null
-            }
-            ListEmptyComponent={
-              <EmptyState
-                title={hasActiveFilters ? 'No encontramos coincidencias' : 'No hay ofertas cercanas'}
-                description={
-                  hasActiveFilters
-                    ? 'Prueba con otra búsqueda o categoría.'
-                    : 'Sé el primero en publicar una oferta cercana.'
-                }
-                icon="🏷️"
-                actionLabel={hasActiveFilters ? 'Limpiar filtros' : undefined}
-                onAction={hasActiveFilters ? clearFilters : undefined}
-              />
-            }
-            refreshControl={
-              <RefreshControl
-                refreshing={isFetching && !isLoading}
-                onRefresh={refetch}
-                tintColor={colors.primary}
-              />
-            }
-            contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
-            keyboardDismissMode="on-drag"
-            keyboardShouldPersistTaps="handled"
-          />
+                  <ActivityIndicator size="small" color={colors.primary} />
+                </View>
+              ) : null}
+            </View>
+          ) : (
+            <FlatList
+              data={offers}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <OfferCard
+                  offer={item}
+                  onPress={() => navigation.navigate('OfferDetail', { offerId: item.id, distanceMeters: item.distanceMeters })}
+                />
+              )}
+              ListHeaderComponent={
+                offers.length > 0 ? (
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: colors.textMuted,
+                      paddingHorizontal: 16,
+                      paddingTop: 12,
+                      paddingBottom: 4,
+                    }}
+                  >
+                    {offers.length} oferta{offers.length !== 1 ? 's' : ''} cerca de ti
+                  </Text>
+                ) : null
+              }
+              ListEmptyComponent={
+                <EmptyState
+                  title={hasActiveFilters ? 'No encontramos coincidencias' : 'No hay ofertas cercanas'}
+                  description={
+                    hasActiveFilters
+                      ? 'Prueba con otra búsqueda o categoría.'
+                      : 'Sé el primero en publicar una oferta cercana.'
+                  }
+                  icon="🏷️"
+                  actionLabel={hasActiveFilters ? 'Limpiar filtros' : undefined}
+                  onAction={hasActiveFilters ? clearFilters : undefined}
+                />
+              }
+              refreshControl={
+                <RefreshControl
+                  refreshing={isFetching && !isLoading}
+                  onRefresh={refetch}
+                  tintColor={colors.primary}
+                />
+              }
+              contentContainerStyle={{ paddingBottom: 24, flexGrow: 1 }}
+              keyboardDismissMode="on-drag"
+              keyboardShouldPersistTaps="handled"
+            />
+          )}
         </View>
       )}
     </View>

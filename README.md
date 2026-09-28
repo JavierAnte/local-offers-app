@@ -1,6 +1,6 @@
 # LocalOffers App
 
-Expo/React Native client for LocalOffers. It supports nearby discovery, email/password authentication, offer publishing with photos, comments, validate/invalidate voting, and in-app activity notifications. Product-level documentation lives in the sibling coordination repository's [`docs/`](../docs/) directory.
+Expo/React Native client for LocalOffers. It supports nearby list/map discovery, email/password authentication, offer publishing with photos, comments, validate/invalidate voting, and in-app activity notifications. Product-level documentation lives in the sibling coordination repository's [`docs/`](../docs/) directory.
 
 ## Stack
 
@@ -9,6 +9,7 @@ Expo/React Native client for LocalOffers. It supports nearby discovery, email/pa
 - TanStack Query and Zustand
 - React Hook Form and Zod
 - NativeWind
+- react-native-maps on Android and iOS
 
 ## Commands
 
@@ -25,6 +26,10 @@ npx expo-doctor
 ```
 
 There is currently no configured test runner or linter.
+
+The Feed map is available on Android and iOS. Web remains list-only. A current Expo Go Android authorization issue prevents Google tiles from loading there, so Android map testing requires a development build; iOS continues to use native Apple Maps.
+
+Android development and store builds read a restricted Google Maps SDK key from `GOOGLE_MAPS_ANDROID_API_KEY` at build time. Copy `.env.example` to `.env.local` for local builds or configure the value in the build service's secret store. Never commit the real key. The Android package and iOS bundle identifier are both `com.javierante.localoffers`.
 
 ## Local API
 
