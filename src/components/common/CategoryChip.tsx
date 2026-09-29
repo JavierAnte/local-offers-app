@@ -18,7 +18,7 @@ export function CategoryChip({ label, icon, selected, onPress }: CategoryChipPro
     <TouchableOpacity
       onPress={onPress}
       className={cn(
-        'flex-row items-center px-4 py-1.5 rounded-full mr-2 border',
+        'flex-row items-center px-3 py-1 rounded-full mr-2 border',
         selected ? 'bg-primary border-primary' : 'bg-white border-border',
       )}
     >
@@ -30,7 +30,7 @@ export function CategoryChip({ label, icon, selected, onPress }: CategoryChipPro
           style={{ marginRight: 5 }}
         />
       ) : null}
-      <Text className={cn('text-sm font-medium', selected ? 'text-white' : 'text-text')}>
+      <Text className={cn('text-xs font-medium', selected ? 'text-white' : 'text-text')}>
         {label}
       </Text>
     </TouchableOpacity>

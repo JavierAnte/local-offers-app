@@ -206,9 +206,14 @@ export default function OfferDetailScreen() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: colors.white }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Hero image */}
         {offer.imageUrl ? (
           <Image
@@ -434,13 +439,9 @@ export default function OfferDetailScreen() {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Fixed comment input */}
+      {/* Comment composer */}
       <View
         style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
           backgroundColor: colors.white,
           borderTopWidth: 1,
           borderTopColor: colors.border,

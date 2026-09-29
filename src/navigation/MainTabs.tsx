@@ -12,11 +12,20 @@ import { colors } from '../theme/colors';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-function CenterTabButton({ onPress, children }: BottomTabBarButtonProps) {
+function CenterTabButton({ onPress, onLongPress, accessibilityState }: BottomTabBarButtonProps) {
   return (
-    <TouchableOpacity onPress={onPress ?? undefined} style={styles.centerButton} activeOpacity={0.82}>
-      <View style={styles.centerButtonRing}>
-        <View style={styles.centerButtonInner}>{children}</View>
+    <TouchableOpacity
+      onPress={onPress ?? undefined}
+      onLongPress={onLongPress ?? undefined}
+      style={styles.centerButton}
+      activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityLabel="Publicar oferta"
+      accessibilityState={accessibilityState}
+    >
+      <View style={styles.publishPill}>
+        <Text style={styles.publishPlus}>+</Text>
+        <Text style={styles.publishLabel}>Publicar</Text>
       </View>
     </TouchableOpacity>
   );
@@ -53,27 +62,39 @@ function ProfileTabIcon({ color, size }: { color: string; size: number }) {
 
 const styles = StyleSheet.create({
   centerButton: {
-    top: -22,
+    top: -16,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  centerButtonRing: {
-    borderRadius: 34,
-    padding: 3,
-    backgroundColor: colors.white,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    elevation: 10,
-  },
-  centerButtonInner: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
+  publishPill: {
+    width: 112,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: colors.primary,
-    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: colors.white,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 7,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 9,
+    elevation: 8,
+  },
+  publishPlus: {
+    color: colors.white,
+    fontSize: 27,
+    lineHeight: 28,
+    fontWeight: '700',
+    marginTop: -2,
+  },
+  publishLabel: {
+    color: colors.white,
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: '700',
   },
 });
 
@@ -84,6 +105,7 @@ export default function MainTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
@@ -116,7 +138,6 @@ export default function MainTabs() {
         component={CreateOfferScreen}
         options={{
           tabBarLabel: 'Publicar',
-          tabBarIcon: () => <Ionicons name="add" size={32} color={colors.white} />,
           tabBarButton: (props) => <CenterTabButton {...props} />,
         }}
       />

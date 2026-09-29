@@ -31,12 +31,10 @@ function ViewToggle({ value, onChange }: { value: FeedView; onChange: (value: Fe
   return (
     <View
       style={{
-        alignSelf: 'center',
         flexDirection: 'row',
         backgroundColor: colors.surface,
         borderRadius: 9,
-        padding: 3,
-        marginBottom: 10,
+        padding: 2,
         borderWidth: 1,
         borderColor: colors.border,
       }}
@@ -55,9 +53,9 @@ function ViewToggle({ value, onChange }: { value: FeedView; onChange: (value: Fe
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 6,
-              paddingHorizontal: 18,
-              paddingVertical: 7,
+              gap: 4,
+              paddingHorizontal: 10,
+              paddingVertical: 6,
               borderRadius: 7,
               backgroundColor: selected ? colors.white : 'transparent',
             }}
@@ -94,21 +92,23 @@ function LocationHeader({
 }) {
   const subtitle =
     locationStatus === 'loading'
-      ? 'Buscando tu ubicación…'
+      ? 'Buscando ubicación…'
       : isUsingFallback
-        ? 'Ubicación no disponible · mostrando zona por defecto'
+        ? 'Zona por defecto'
         : 'Cerca de ti';
 
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-      <Ionicons name="location" size={20} color={colors.primary} style={{ marginRight: 8 }} />
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>Tu ubicación</Text>
-        <Text style={{ fontSize: 12, color: colors.textMuted }}>{subtitle}</Text>
-      </View>
+    <View style={{ flexDirection: 'row', alignItems: 'center', flexShrink: 1 }}>
+      <Ionicons name="location" size={18} color={colors.primary} style={{ marginRight: 6 }} />
+      <Text
+        numberOfLines={1}
+        style={{ fontSize: 14, fontWeight: '600', color: colors.text, flexShrink: 1 }}
+      >
+        {subtitle}
+      </Text>
       {isUsingFallback && (
-        <TouchableOpacity onPress={onRetry} hitSlop={8}>
-          <Text style={{ fontSize: 12, fontWeight: '600', color: colors.primary }}>Reintentar</Text>
+        <TouchableOpacity onPress={onRetry} hitSlop={8} style={{ marginLeft: 8 }}>
+          <Text style={{ fontSize: 12, fontWeight: '700', color: colors.primary }}>Reintentar</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -130,11 +130,12 @@ function SearchBar({
         flexDirection: 'row',
         alignItems: 'center',
         marginHorizontal: 16,
-        marginVertical: 8,
+        marginTop: 4,
+        marginBottom: 2,
         backgroundColor: colors.surface,
         borderRadius: 10,
         paddingHorizontal: 12,
-        paddingVertical: 9,
+        paddingVertical: 8,
         borderWidth: 1,
         borderColor: colors.border,
       }}
@@ -200,11 +201,24 @@ export default function FeedScreen() {
     <View style={{ flex: 1, backgroundColor: colors.surface }}>
       {/* Header */}
       <View style={{ backgroundColor: colors.white, borderBottomWidth: 1, borderBottomColor: colors.border }}>
-        <LocationHeader
-          locationStatus={locationStatus}
-          isUsingFallback={isUsingFallback}
-          onRetry={refreshLocation}
-        />
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            paddingHorizontal: 16,
+            paddingTop: 8,
+            paddingBottom: 4,
+          }}
+        >
+          <LocationHeader
+            locationStatus={locationStatus}
+            isUsingFallback={isUsingFallback}
+            onRetry={refreshLocation}
+          />
+          {supportsMap ? <ViewToggle value={viewMode} onChange={setViewMode} /> : null}
+        </View>
         <SearchBar
           value={searchText}
           onChangeText={setSearchText}
@@ -215,7 +229,7 @@ export default function FeedScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 10 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 6, paddingBottom: 8 }}
         >
           {MOCK_CATEGORIES.map((cat) => (
             <CategoryChip
@@ -227,7 +241,6 @@ export default function FeedScreen() {
             />
           ))}
         </ScrollView>
-        {supportsMap ? <ViewToggle value={viewMode} onChange={setViewMode} /> : null}
       </View>
 
       {showSpinner ? (
