@@ -27,7 +27,7 @@ export default function FeedStack() {
         }: {
           navigation: NativeStackNavigationProp<FeedStackParamList, 'Feed'>;
         }) => ({
-          title: 'Ofertas cercanas',
+          title: 'Ofertas',
           headerRight: () => (
             <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
               <Ionicons name="notifications-outline" size={24} color={colors.primary} />
