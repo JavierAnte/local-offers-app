@@ -39,6 +39,12 @@
       "expo-secure-store",
       "expo-status-bar",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "409621e2-6006-4397-9582-bb6cd8bef2b8"
+      }
+    },
+    "owner": "javierante"
   }
 }
